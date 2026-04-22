@@ -20,6 +20,10 @@
     [bookScene, deskScene, letterScene, hiddenRevealScene, finalScene].forEach((s) => {
       if (s) s.classList.toggle('hidden', s !== targetScene);
     });
+
+    if (bookMarginSymbols) {
+      bookMarginSymbols.style.display = targetScene === bookScene ? 'block' : 'none';
+    }
   }
 
   // ===== BOOK NAVIGATION =====
@@ -68,33 +72,34 @@
     setTimeout(() => {
       isFlipping = false;
     }, 600);
+  }
 
-    // Auto-advance to desk scene at end
+  function moveForwardFromBook() {
     if (currentPage === pages.length - 1) {
-      setTimeout(() => {
-        transitionToDesk();
-      }, 1200);
+      transitionToDesk();
+      return;
     }
+    flipTo(currentPage + 1);
   }
 
   prevBtn?.addEventListener('click', () => flipTo(currentPage - 1));
-  nextBtn?.addEventListener('click', () => flipTo(currentPage + 1));
+  nextBtn?.addEventListener('click', () => moveForwardFromBook());
 
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') flipTo(currentPage + 1);
+    if (e.key === 'ArrowRight') moveForwardFromBook();
     if (e.key === 'ArrowLeft') flipTo(currentPage - 1);
   });
 
   function isInteractiveTarget(target) {
     if (!(target instanceof Element)) return false;
-    return Boolean(target.closest('button, a, input, textarea, select, .letter-envelope, .reveal-card'));
+    return Boolean(target.closest('button, a, input, textarea, select, .letter-envelope, .reveal-card, .memory-caption'));
   }
 
   book?.addEventListener('click', (e) => {
     if (isInteractiveTarget(e.target)) return;
     const rect = book.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    if (x >= rect.width / 2) flipTo(currentPage + 1);
+    if (x >= rect.width / 2) moveForwardFromBook();
     else flipTo(currentPage - 1);
   });
 
@@ -107,7 +112,7 @@
     const endX = e.changedTouches[0]?.clientX || 0;
     const dx = endX - touchStartX;
     if (Math.abs(dx) < 28) return;
-    if (dx < 0) flipTo(currentPage + 1);
+    if (dx < 0) moveForwardFromBook();
     if (dx > 0) flipTo(currentPage - 1);
   }, { passive: true });
 
@@ -124,6 +129,10 @@
       document.getElementById('memRight4'),
     ];
 
+    const titleNodes = Array.from({ length: 8 }, (_, i) => document.getElementById(`memTitle${i + 1}`));
+    const captionNodes = Array.from({ length: 8 }, (_, i) => document.getElementById(`memCaption${i + 1}`));
+    const memoryTitles = data.memory_titles || [];
+
     slots.forEach((img, idx) => {
       if (!img) return;
       const src = memories.length
@@ -131,6 +140,15 @@
         : `https://picsum.photos/1100?random=${idx + 1}`;
       img.src = src;
       img.loading = 'lazy';
+
+      if (titleNodes[idx]) {
+        titleNodes[idx].textContent = memoryTitles[idx] || `Memory ${idx + 1}`;
+      }
+
+      if (captionNodes[idx]) {
+        const baseCaption = captions[idx] || 'Tap here and add your own caption ✨';
+        captionNodes[idx].textContent = baseCaption;
+      }
     });
   }
 
@@ -175,7 +193,11 @@
   // ===== SYMBOLS =====
   const symbolIntroLeft = document.getElementById('symbolIntroLeft');
   const symbolIntroRight = document.getElementById('symbolIntroRight');
+  const bookMarginSymbols = document.getElementById('bookMarginSymbols');
   const finalSymbols = document.getElementById('finalSymbols');
+  const movingMarginSymbols = [];
+  const movingFinalSymbols = [];
+  let symbolPhysicsStarted = false;
 
   function loadSymbols() {
     const sym1 = data.symbols?.[0] || '';
@@ -191,47 +213,192 @@
     }
   }
 
+  function createSprite(layer, options) {
+    const {
+      symbolSrc = '',
+      emoji = '',
+      className,
+      size,
+      x,
+      y,
+      vx,
+      vy,
+    } = options;
+
+    const node = document.createElement('div');
+    node.className = className;
+    node.style.width = `${size}px`;
+    node.style.height = `${size}px`;
+
+    if (symbolSrc) {
+      const img = document.createElement('img');
+      img.src = symbolSrc;
+      img.alt = 'floating symbol';
+      node.appendChild(img);
+    } else {
+      node.textContent = emoji;
+      node.style.width = 'auto';
+      node.style.height = 'auto';
+    }
+
+    layer.appendChild(node);
+
+    return {
+      node,
+      x,
+      y,
+      vx,
+      vy,
+      r: size / 2,
+      size,
+      isEmoji: !symbolSrc,
+    };
+  }
+
+  function resolveSpriteCollision(a, b) {
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const dist = Math.hypot(dx, dy);
+    const minDist = a.r + b.r;
+    if (!dist || dist >= minDist) return;
+
+    const nx = dx / dist;
+    const ny = dy / dist;
+    const overlap = (minDist - dist) * 0.5;
+
+    a.x -= nx * overlap;
+    a.y -= ny * overlap;
+    b.x += nx * overlap;
+    b.y += ny * overlap;
+
+    const rvx = a.vx - b.vx;
+    const rvy = a.vy - b.vy;
+    const relVel = rvx * nx + rvy * ny;
+    if (relVel > 0) return;
+
+    const impulse = -2 * relVel / 2;
+    a.vx += impulse * nx;
+    a.vy += impulse * ny;
+    b.vx -= impulse * nx;
+    b.vy -= impulse * ny;
+  }
+
+  function updateSpriteGroup(group, boundsWidth, boundsHeight) {
+    for (let i = 0; i < group.length; i += 1) {
+      const s = group[i];
+      s.vx += (Math.random() - 0.5) * 0.02;
+      s.vy += (Math.random() - 0.5) * 0.02;
+      s.vx = Math.max(-1.5, Math.min(1.5, s.vx));
+      s.vy = Math.max(-1.5, Math.min(1.5, s.vy));
+
+      s.x += s.vx;
+      s.y += s.vy;
+
+      if (s.x - s.r < 0) { s.x = s.r; s.vx *= -1; }
+      if (s.x + s.r > boundsWidth) { s.x = boundsWidth - s.r; s.vx *= -1; }
+      if (s.y - s.r < 0) { s.y = s.r; s.vy *= -1; }
+      if (s.y + s.r > boundsHeight) { s.y = boundsHeight - s.r; s.vy *= -1; }
+    }
+
+    for (let i = 0; i < group.length; i += 1) {
+      for (let j = i + 1; j < group.length; j += 1) {
+        resolveSpriteCollision(group[i], group[j]);
+      }
+    }
+
+    group.forEach((s) => {
+      s.node.style.transform = `translate(${s.x - s.r}px, ${s.y - s.r}px)`;
+    });
+  }
+
+  function startSymbolPhysicsLoop() {
+    if (symbolPhysicsStarted) return;
+    symbolPhysicsStarted = true;
+
+    const tick = () => {
+      if (bookMarginSymbols) {
+        updateSpriteGroup(movingMarginSymbols, window.innerWidth, window.innerHeight);
+      }
+      if (finalSymbols) {
+        const rect = finalSymbols.getBoundingClientRect();
+        updateSpriteGroup(movingFinalSymbols, Math.max(rect.width, 1), Math.max(rect.height, 1));
+      }
+      requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
+  }
+
+  function createBookMarginSymbols() {
+    if (!bookMarginSymbols) return;
+    bookMarginSymbols.innerHTML = '';
+    movingMarginSymbols.length = 0;
+
+    const available = [data.symbols?.[1], data.symbols?.[2], data.symbols?.[3]].filter(Boolean);
+    if (!available.length) return;
+
+    const count = 7;
+    for (let i = 0; i < count; i += 1) {
+      const size = 54 + Math.random() * 26;
+      const atEdge = i % 4;
+      const x = atEdge === 0
+        ? size
+        : atEdge === 1
+          ? window.innerWidth - size
+          : Math.random() * (window.innerWidth - size * 2) + size;
+      const y = atEdge === 2
+        ? size
+        : atEdge === 3
+          ? window.innerHeight - size
+          : Math.random() * (window.innerHeight - size * 2) + size;
+
+      const sprite = createSprite(bookMarginSymbols, {
+        symbolSrc: available[i % available.length],
+        className: 'margin-symbol',
+        size,
+        x,
+        y,
+        vx: (Math.random() * 2 - 1) * 0.95,
+        vy: (Math.random() * 2 - 1) * 0.95,
+      });
+      movingMarginSymbols.push(sprite);
+    }
+  }
+
   function createFinalScene() {
     if (!finalSymbols) return;
     finalSymbols.innerHTML = '';
+    movingFinalSymbols.length = 0;
 
-    const symIndices = [1, 2, 3];
-    const positions = [
-      { x: '14%', y: '24%', size: 120 },
-      { x: '78%', y: '30%', size: 140 },
-      { x: '52%', y: '74%', size: 130 },
-    ];
-
-    symIndices.forEach((idx, i) => {
-      const sym = data.symbols?.[idx];
-      if (!sym) return;
-
-      const wrap = document.createElement('div');
-      wrap.className = 'floating-symbol';
-      wrap.style.left = positions[i].x;
-      wrap.style.top = positions[i].y;
-      wrap.style.width = `${positions[i].size}px`;
-      wrap.style.height = `${positions[i].size}px`;
-
-      const img = document.createElement('img');
-      img.src = sym;
-      img.alt = `Symbol ${idx + 1}`;
-      wrap.appendChild(img);
-      finalSymbols.appendChild(wrap);
-
-      if (window.gsap) {
-        gsap.to(wrap, {
-          x: `${i % 2 === 0 ? 24 : -20}px`,
-          y: `${-26 + i * 4}px`,
-          rotation: i % 2 === 0 ? 7 : -6,
-          duration: 4.4 + i * 0.5,
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
-          delay: i * 0.25,
-        });
-      }
+    const available = [data.symbols?.[1], data.symbols?.[2], data.symbols?.[3]].filter(Boolean);
+    available.forEach((sym, i) => {
+      const size = 96 + Math.random() * 50;
+      const sprite = createSprite(finalSymbols, {
+        symbolSrc: sym,
+        className: 'floating-symbol',
+        size,
+        x: 90 + i * 160,
+        y: 90 + i * 110,
+        vx: (Math.random() * 2 - 1) * 1.2,
+        vy: (Math.random() * 2 - 1) * 1.2,
+      });
+      movingFinalSymbols.push(sprite);
     });
+
+    const emojis = ['💗', '💖', '💞', '✨', '🌸', '🎀', '🩷', '💘'];
+    for (let i = 0; i < 12; i += 1) {
+      const size = 28 + Math.random() * 18;
+      const sprite = createSprite(finalSymbols, {
+        emoji: emojis[i % emojis.length],
+        className: 'floating-emoji',
+        size,
+        x: Math.random() * Math.max(window.innerWidth - 120, 120) + 60,
+        y: Math.random() * Math.max(window.innerHeight - 120, 120) + 60,
+        vx: (Math.random() * 2 - 1) * 1.25,
+        vy: (Math.random() * 2 - 1) * 1.25,
+      });
+      movingFinalSymbols.push(sprite);
+    }
   }
 
   // ===== HEART PARTICLES =====
@@ -349,14 +516,18 @@
   const envelope = document.getElementById('envelope');
   const letterContent = document.getElementById('letterContent');
   const letterCard = document.getElementById('letterCard');
+  const letterContinueHint = document.getElementById('letterContinueHint');
   const revealCard = document.getElementById('revealCard');
   const revealImage = document.getElementById('revealImage');
 
   function setupEnvelope() {
     if (!envelope || !letterContent) return;
-    letterContent.textContent = data.letter || 'Write your letter here.';
+    const message = data.letter || 'Write your letter here.';
+    letterContent.textContent = message;
+    if (letterCard) letterCard.textContent = message;
 
     let openedOnce = false;
+    let readyForContinue = false;
 
     const openEnvelope = () => {
       if (openedOnce) return;
@@ -365,11 +536,26 @@
       playFlip();
 
       setTimeout(() => {
-        transitionToHiddenReveal();
-      }, 2400);
+        readyForContinue = true;
+        letterContinueHint?.classList.remove('hidden');
+      }, 700);
     };
 
-    letterScene?.addEventListener('click', openEnvelope);
+    const continueIfReady = () => {
+      if (!openedOnce || !readyForContinue) return;
+      readyForContinue = false;
+      letterContinueHint?.classList.add('hidden');
+      transitionToHiddenReveal();
+    };
+
+    letterScene?.addEventListener('click', () => {
+      if (!openedOnce) {
+        openEnvelope();
+        return;
+      }
+      continueIfReady();
+    });
+
     envelope.addEventListener('click', (e) => {
       e.stopPropagation();
       openEnvelope();
@@ -378,7 +564,11 @@
     letterScene?.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        openEnvelope();
+        if (!openedOnce) {
+          openEnvelope();
+        } else {
+          continueIfReady();
+        }
       }
     });
   }
@@ -650,6 +840,8 @@
   updateBook();
   renderMemories();
   loadSymbols();
+  createBookMarginSymbols();
+  startSymbolPhysicsLoop();
   setupEnvelope();
   setupHoldReveal();
   setupAudio();
@@ -661,7 +853,10 @@
   for (let i = 0; i < HEART_COUNT; i += 1) hearts.push(createHeart());
   animateHearts();
 
-  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    createBookMarginSymbols();
+  });
 
   setTimeout(typeStory, 500);
 

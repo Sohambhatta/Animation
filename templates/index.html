@@ -16,6 +16,7 @@
     <canvas id="heartCanvas" aria-hidden="true"></canvas>
     <div class="film-grain" aria-hidden="true"></div>
     <div class="sparkle-layer" id="sparkleLayer" aria-hidden="true"></div>
+    <div class="book-margin-symbols" id="bookMarginSymbols" aria-hidden="true"></div>
 
     <header class="top-controls">
       <button id="musicToggle" class="pill-btn" type="button">🎵 Music: Off</button>
@@ -40,10 +41,17 @@
 
         <article class="page" data-page="1">
           <div class="page-face front memory-page spread-page">
-            <h2>Our little memories</h2>
             <div class="memory-spread">
-              <figure class="spread-photo"><img id="memLeft1" alt="Memory 1" /></figure>
-              <figure class="spread-photo"><img id="memRight1" alt="Memory 2" /></figure>
+              <section class="memory-card">
+                <h3 id="memTitle1" class="memory-card-title">Memory 1</h3>
+                <figure class="spread-photo"><img id="memLeft1" alt="Memory 1" /></figure>
+                <p id="memCaption1" class="memory-caption" contenteditable="true" spellcheck="false"></p>
+              </section>
+              <section class="memory-card">
+                <h3 id="memTitle2" class="memory-card-title">Memory 2</h3>
+                <figure class="spread-photo"><img id="memRight1" alt="Memory 2" /></figure>
+                <p id="memCaption2" class="memory-caption" contenteditable="true" spellcheck="false"></p>
+              </section>
             </div>
           </div>
           <div class="page-face back"></div>
@@ -51,10 +59,17 @@
 
         <article class="page" data-page="2">
           <div class="page-face front memory-page spread-page">
-            <h2>More us, more smiles</h2>
             <div class="memory-spread">
-              <figure class="spread-photo"><img id="memLeft2" alt="Memory 3" /></figure>
-              <figure class="spread-photo"><img id="memRight2" alt="Memory 4" /></figure>
+              <section class="memory-card">
+                <h3 id="memTitle3" class="memory-card-title">Memory 3</h3>
+                <figure class="spread-photo"><img id="memLeft2" alt="Memory 3" /></figure>
+                <p id="memCaption3" class="memory-caption" contenteditable="true" spellcheck="false"></p>
+              </section>
+              <section class="memory-card">
+                <h3 id="memTitle4" class="memory-card-title">Memory 4</h3>
+                <figure class="spread-photo"><img id="memRight2" alt="Memory 4" /></figure>
+                <p id="memCaption4" class="memory-caption" contenteditable="true" spellcheck="false"></p>
+              </section>
             </div>
           </div>
           <div class="page-face back"></div>
@@ -62,10 +77,17 @@
 
         <article class="page" data-page="3">
           <div class="page-face front memory-page spread-page">
-            <h2>Moments we treasure</h2>
             <div class="memory-spread">
-              <figure class="spread-photo"><img id="memLeft3" alt="Memory 5" /></figure>
-              <figure class="spread-photo"><img id="memRight3" alt="Memory 6" /></figure>
+              <section class="memory-card">
+                <h3 id="memTitle5" class="memory-card-title">Memory 5</h3>
+                <figure class="spread-photo"><img id="memLeft3" alt="Memory 5" /></figure>
+                <p id="memCaption5" class="memory-caption" contenteditable="true" spellcheck="false"></p>
+              </section>
+              <section class="memory-card">
+                <h3 id="memTitle6" class="memory-card-title">Memory 6</h3>
+                <figure class="spread-photo"><img id="memRight3" alt="Memory 6" /></figure>
+                <p id="memCaption6" class="memory-caption" contenteditable="true" spellcheck="false"></p>
+              </section>
             </div>
           </div>
           <div class="page-face back"></div>
@@ -73,10 +95,17 @@
 
         <article class="page" data-page="4">
           <div class="page-face front memory-page spread-page">
-            <h2>Every day with you</h2>
             <div class="memory-spread">
-              <figure class="spread-photo"><img id="memLeft4" alt="Memory 7" /></figure>
-              <figure class="spread-photo"><img id="memRight4" alt="Memory 8" /></figure>
+              <section class="memory-card">
+                <h3 id="memTitle7" class="memory-card-title">Memory 7</h3>
+                <figure class="spread-photo"><img id="memLeft4" alt="Memory 7" /></figure>
+                <p id="memCaption7" class="memory-caption" contenteditable="true" spellcheck="false"></p>
+              </section>
+              <section class="memory-card">
+                <h3 id="memTitle8" class="memory-card-title">Memory 8</h3>
+                <figure class="spread-photo"><img id="memRight4" alt="Memory 8" /></figure>
+                <p id="memCaption8" class="memory-caption" contenteditable="true" spellcheck="false"></p>
+              </section>
             </div>
           </div>
           <div class="page-face back"></div>
@@ -125,6 +154,7 @@
           <div id="letterCard" class="letter-card"></div>
         </div>
       </div>
+      <p id="letterContinueHint" class="continue-hint hidden">Tap again to continue ✨</p>
     </div>
 
     <div id="hiddenRevealScene" class="hidden-reveal-scene hidden">
