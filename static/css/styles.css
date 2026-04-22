@@ -234,12 +234,11 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
 }
 
 .symbol-left {
-  transform: scaleX(-1);
+  display: block;
 }
 
 .symbol-right {
-  /* normal orientation */
-  display: block;
+  transform: scaleX(-1);
 }
 
 .pop-in {
@@ -266,62 +265,42 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
   pointer-events: none;
 }
 
-.memory-grid {
-  margin-top: 10px;
+.spread-page h2 {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.memory-spread {
+  height: calc(100% - 64px);
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
-.memory-grid-2 {
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-.polaroid {
-  background: white;
-  padding: 10px 10px 36px;
-  border-radius: 8px;
-  box-shadow: 0 8px 20px rgba(73, 49, 63, 0.2);
+.spread-photo {
+  margin: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 26px rgba(73, 49, 63, 0.22);
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  background: #fff;
   position: relative;
-  transform: rotate(var(--tilt, 0deg));
-  transition: transform 0.35s ease;
-  cursor: pointer;
-  animation: polaroidBob 4.8s ease-in-out infinite;
 }
 
-.memory-grid .polaroid:nth-child(2n) {
-  animation-delay: 0.6s;
+.spread-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.26), transparent 45%);
 }
 
-@keyframes polaroidBob {
-  0%, 100% { translate: 0 0; }
-  50% { translate: 0 -4px; }
-}
-
-.polaroid:hover {
-  transform: rotate(0deg) scale(1.035);
-}
-
-.polaroid img {
+.spread-photo img {
   width: 100%;
-  aspect-ratio: 1/1;
+  height: 100%;
   object-fit: cover;
   display: block;
-  filter: contrast(1.02) saturate(0.82) sepia(0.24) hue-rotate(-8deg);
-}
-
-.polaroid .caption {
-  font-family: "Caveat", cursive;
-  margin-top: 8px;
-  font-size: 1.3rem;
-}
-
-.sticker {
-  position: absolute;
-  top: -15px;
-  right: -12px;
-  font-size: 1.6rem;
-  animation: wiggle 2.4s ease-in-out infinite;
+  filter: contrast(1.03) saturate(0.86) sepia(0.14);
 }
 
 @keyframes wiggle {
@@ -331,15 +310,43 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
   75% { transform: rotate(-6deg); }
 }
 
+.story-spread {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+}
+
+.story-panel-left,
+.story-panel-right {
+  padding: 8px 20px 12px;
+  min-width: 0;
+}
+
+.story-panel-left {
+  border-right: 1px solid rgba(110, 80, 132, 0.22);
+  overflow: hidden;
+}
+
+.story-panel-right {
+  border-left: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.story-panel-right p {
+  margin: 0;
+  font-size: 1.08rem;
+  line-height: 1.75;
+}
+
 .story-text {
-  margin-top: 18px;
+  margin-top: 10px;
   line-height: 1.7;
-  font-size: 1.12rem;
+  font-size: 1.06rem;
   white-space: pre-wrap;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  max-height: 380px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  max-height: 76%;
   overflow-y: auto;
+  padding-right: 8px;
 }
 
 .story-char {
@@ -594,8 +601,9 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
 
 @media (max-width: 920px) {
   .page-face { padding: 20px; }
-  .memory-grid { gap: 12px; }
-  .almost-page p { max-width: 100%; }
+  .memory-spread { gap: 10px; }
+  .story-panel-left,
+  .story-panel-right { padding: 8px 10px; }
 }
 
 /* ===== NEW SCENES ===== */
@@ -607,6 +615,7 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
 #bookScene,
 #deskScene,
 #letterScene,
+#hiddenRevealScene,
 #finalScene {
   position: fixed;
   inset: 0;
@@ -746,6 +755,32 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
   border-radius: 8px;
 }
 
+/* HIDDEN REVEAL SCENE */
+.hidden-reveal-scene {
+  background: radial-gradient(circle at 50% 22%, #fff5fb 0%, #f6e3f0 58%, #ead3e4 100%);
+  display: grid;
+  place-items: center;
+}
+
+.hidden-reveal-wrap {
+  width: min(90vw, 860px);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(73, 49, 63, 0.2);
+  padding: 24px;
+  text-align: center;
+}
+
+.hidden-reveal-wrap h2 {
+  margin-bottom: 8px;
+}
+
+.hidden-reveal-wrap p {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
 /* FINAL BLACK SCENE */
 .final-scene {
   background: #0a0a0d;
@@ -769,12 +804,14 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
 
 .floating-symbol {
   position: absolute;
-  opacity: 0.7;
+  opacity: 0.95;
+  mix-blend-mode: screen;
+  will-change: transform;
 }
 
 .floating-symbol img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 0 20px rgba(255, 180, 230, 0.4));
+  filter: drop-shadow(0 0 22px rgba(255, 180, 230, 0.5));
 }

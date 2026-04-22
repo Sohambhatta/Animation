@@ -22,10 +22,8 @@
       <button id="muteFxToggle" class="pill-btn" type="button">🔔 SFX: On</button>
     </header>
 
-    <!-- BOOK SCENE -->
     <main id="bookScene" class="scene-wrap">
       <section id="book" class="book" aria-label="Anniversary scrapbook">
-        <!-- Intro with Symbols -->
         <article class="page" data-page="0">
           <div class="page-face front intro-page">
             <div class="symbol-pair">
@@ -40,68 +38,67 @@
           <div class="page-face back"></div>
         </article>
 
-        <!-- Memory Pages 1 (IMG_1-2) -->
         <article class="page" data-page="1">
-          <div class="page-face front memory-page">
+          <div class="page-face front memory-page spread-page">
             <h2>Our little memories</h2>
-            <div id="memoryGrid1" class="memory-grid memory-grid-2"></div>
-          </div>
-          <div class="page-face back"></div>
-        </article>
-
-        <!-- Memory Pages 2 (IMG_3-4) -->
-        <article class="page" data-page="2">
-          <div class="page-face front memory-page">
-            <h2>More us, more smiles</h2>
-            <div id="memoryGrid2" class="memory-grid memory-grid-2"></div>
-          </div>
-          <div class="page-face back"></div>
-        </article>
-
-        <!-- Memory Pages 3 (IMG_5-6) -->
-        <article class="page" data-page="3">
-          <div class="page-face front memory-page">
-            <h2>Moments we treasure</h2>
-            <div id="memoryGrid3" class="memory-grid memory-grid-2"></div>
-          </div>
-          <div class="page-face back"></div>
-        </article>
-
-        <!-- Memory Pages 4 (IMG_7-8) -->
-        <article class="page" data-page="4">
-          <div class="page-face front memory-page">
-            <h2>Every day with you</h2>
-            <div id="memoryGrid4" class="memory-grid memory-grid-2"></div>
-          </div>
-          <div class="page-face back"></div>
-        </article>
-
-        <!-- Story Page (left) + Almost Page (right - back of same spread) -->
-        <article class="page" data-page="5">
-          <div class="page-face front story-page">
-            <h2>Our story</h2>
-            <div id="storyText" class="story-text"></div>
-          </div>
-          <div class="page-face back almost-page-back">
-            <h2>Almost there…</h2>
-            <p>
-              sweetheart, if I could pin every soft moment on these pages, I still wouldn't be done.
-              Thank you for being warmth, comfort, and the best kind of chaos.
-            </p>
-            <div class="glow-hearts" aria-hidden="true">
-              <span>💗</span><span>💞</span><span>💓</span>
+            <div class="memory-spread">
+              <figure class="spread-photo"><img id="memLeft1" alt="Memory 1" /></figure>
+              <figure class="spread-photo"><img id="memRight1" alt="Memory 2" /></figure>
             </div>
           </div>
+          <div class="page-face back"></div>
         </article>
 
-        <!-- Hidden Image Reveal (last page) -->
-        <article class="page" data-page="6">
-          <div class="page-face front hold-page">
-            <h2>The Hidden Moment</h2>
-            <p>Hold down on the image to reveal the hidden memory.</p>
-            <div id="revealCard" class="reveal-card">
-              <img id="revealImage" alt="Hidden memory" />
-              <div id="revealOverlay" class="reveal-overlay">Hold to reveal 💛</div>
+        <article class="page" data-page="2">
+          <div class="page-face front memory-page spread-page">
+            <h2>More us, more smiles</h2>
+            <div class="memory-spread">
+              <figure class="spread-photo"><img id="memLeft2" alt="Memory 3" /></figure>
+              <figure class="spread-photo"><img id="memRight2" alt="Memory 4" /></figure>
+            </div>
+          </div>
+          <div class="page-face back"></div>
+        </article>
+
+        <article class="page" data-page="3">
+          <div class="page-face front memory-page spread-page">
+            <h2>Moments we treasure</h2>
+            <div class="memory-spread">
+              <figure class="spread-photo"><img id="memLeft3" alt="Memory 5" /></figure>
+              <figure class="spread-photo"><img id="memRight3" alt="Memory 6" /></figure>
+            </div>
+          </div>
+          <div class="page-face back"></div>
+        </article>
+
+        <article class="page" data-page="4">
+          <div class="page-face front memory-page spread-page">
+            <h2>Every day with you</h2>
+            <div class="memory-spread">
+              <figure class="spread-photo"><img id="memLeft4" alt="Memory 7" /></figure>
+              <figure class="spread-photo"><img id="memRight4" alt="Memory 8" /></figure>
+            </div>
+          </div>
+          <div class="page-face back"></div>
+        </article>
+
+        <article class="page" data-page="5">
+          <div class="page-face front story-spread-page">
+            <div class="story-spread">
+              <section class="story-panel-left">
+                <h2>Our story</h2>
+                <div id="storyText" class="story-text"></div>
+              </section>
+              <section class="story-panel-right">
+                <h2>Almost there…</h2>
+                <p>
+                  sweetheart, if I could pin every soft moment on these pages, I still wouldn't be done.
+                  Thank you for being warmth, comfort, and the best kind of chaos.
+                </p>
+                <div class="glow-hearts" aria-hidden="true">
+                  <span>💗</span><span>💞</span><span>💓</span>
+                </div>
+              </section>
             </div>
           </div>
           <div class="page-face back"></div>
@@ -110,17 +107,15 @@
 
       <nav class="book-nav" aria-label="Page navigation">
         <button id="prevBtn" class="nav-btn" type="button">← Back</button>
-        <span id="pageIndicator">Page 1 / 7</span>
+        <span id="pageIndicator">Page 1 / 6</span>
         <button id="nextBtn" class="nav-btn" type="button">Next →</button>
       </nav>
     </main>
 
-    <!-- DESK SCENE (after book) -->
     <div id="deskScene" class="desk-scene hidden">
       <div class="desk"></div>
     </div>
 
-    <!-- LETTER SCENE (envelope + card slider) -->
     <div id="letterScene" class="letter-scene hidden">
       <div id="envelope" class="letter-envelope" role="button" tabindex="0" aria-label="Open letter">
         <div class="envelope-flap"></div>
@@ -132,115 +127,21 @@
       </div>
     </div>
 
-    <!-- FINAL BLACK SCENE (floating symbols + hearts) -->
+    <div id="hiddenRevealScene" class="hidden-reveal-scene hidden">
+      <div class="hidden-reveal-wrap">
+        <h2>The Hidden Moment</h2>
+        <p>Hold down on the image to reveal the hidden memory.</p>
+        <div id="revealCard" class="reveal-card">
+          <img id="revealImage" alt="Hidden memory" />
+          <div id="revealOverlay" class="reveal-overlay">Hold to reveal 💛</div>
+        </div>
+      </div>
+    </div>
+
     <div id="finalScene" class="final-scene hidden">
       <div class="final-background"></div>
       <div id="finalSymbols" class="final-symbols"></div>
     </div>
-
-    <audio id="bgMusic" loop preload="none">
-      <source src="{{ url_for('static', filename='audio/bg-music.mp3') }}" type="audio/mpeg" />
-    </audio>
-    <audio id="flipSfx" preload="none">
-      <source src="{{ url_for('static', filename='audio/page-flip.mp3') }}" type="audio/mpeg" />
-    </audio>
-
-    <script id="appData" type="application/json">{{ data | tojson }}</script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-  </body>
-</html>
-      <section id="book" class="book" aria-label="Anniversary scrapbook">
-        <article class="page" data-page="0">
-          <div class="page-face front intro-page">
-            <h1 class="title pop-in">Happy 1 Year Anniversary 💖</h1>
-            <p class="subtitle">For Sonu — my favorite chapter.</p>
-            <p class="type-line" id="introLine">Tap next to begin the magical scrapbook ✨</p>
-            <div class="confetti-pop" id="confettiPop"></div>
-          </div>
-          <div class="page-face back"></div>
-        </article>
-
-        <article class="page" data-page="1">
-          <div class="page-face front memory-page">
-            <h2>Our little memories</h2>
-            <div id="memoryGridA" class="memory-grid"></div>
-          </div>
-          <div class="page-face back"></div>
-        </article>
-
-        <article class="page" data-page="2">
-          <div class="page-face front memory-page">
-            <h2>More us, more smiles</h2>
-            <div id="memoryGridB" class="memory-grid"></div>
-          </div>
-          <div class="page-face back"></div>
-        </article>
-
-        <article class="page" data-page="3">
-          <div class="page-face front story-page">
-            <h2>Our story</h2>
-            <div id="storyText" class="story-text"></div>
-          </div>
-          <div class="page-face back"></div>
-        </article>
-
-        <article class="page" data-page="4">
-          <div class="page-face front almost-page">
-            <h2>Almost there…</h2>
-            <p>
-              sweetheart, if I could pin every soft moment on these pages, I still wouldn’t be done.
-              Thank you for being warmth, comfort, and the best kind of chaos.
-            </p>
-            <div class="glow-hearts" aria-hidden="true">
-              <span>💗</span><span>💞</span><span>💓</span>
-            </div>
-          </div>
-          <div class="page-face back"></div>
-        </article>
-
-        <article class="page" data-page="5">
-          <div class="page-face front letter-page">
-            <h2>A letter for you</h2>
-            <div id="envelope" class="envelope" role="button" tabindex="0" aria-label="Open letter">
-              <div class="envelope-flap"></div>
-              <div class="envelope-body"></div>
-              <div id="letterContent" class="letter-content"></div>
-            </div>
-          </div>
-          <div class="page-face back"></div>
-        </article>
-
-        <article class="page" data-page="6">
-          <div class="page-face front reel-page">
-            <h2>Retro reel</h2>
-            <div class="reel-window">
-              <div id="filmStrip" class="film-strip"></div>
-            </div>
-            <div class="reel-flicker" aria-hidden="true"></div>
-          </div>
-          <div class="page-face back"></div>
-        </article>
-
-        <article class="page" data-page="7">
-          <div class="page-face front hold-page">
-            <h2>Press and hold</h2>
-            <p>Hold down on the image to reveal the hidden moment.</p>
-            <div id="revealCard" class="reveal-card">
-              <img id="revealImage" alt="Meaningful memory" />
-              <div id="revealOverlay" class="reveal-overlay">Hold to reveal 💛</div>
-            </div>
-          </div>
-          <div class="page-face back"></div>
-        </article>
-      </section>
-
-      <nav class="book-nav" aria-label="Page navigation">
-        <button id="prevBtn" class="nav-btn" type="button">← Back</button>
-        <span id="pageIndicator">Page 1 / 8</span>
-        <button id="nextBtn" class="nav-btn" type="button">Next →</button>
-      </nav>
-    </main>
 
     <audio id="bgMusic" loop preload="none">
       <source src="{{ url_for('static', filename='audio/bg-music.mp3') }}" type="audio/mpeg" />

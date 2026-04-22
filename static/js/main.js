@@ -13,10 +13,11 @@
   const bookScene = document.getElementById('bookScene');
   const deskScene = document.getElementById('deskScene');
   const letterScene = document.getElementById('letterScene');
+  const hiddenRevealScene = document.getElementById('hiddenRevealScene');
   const finalScene = document.getElementById('finalScene');
 
   function showScene(targetScene) {
-    [bookScene, deskScene, letterScene, finalScene].forEach((s) => {
+    [bookScene, deskScene, letterScene, hiddenRevealScene, finalScene].forEach((s) => {
       if (s) s.classList.toggle('hidden', s !== targetScene);
     });
   }
@@ -86,7 +87,7 @@
 
   function isInteractiveTarget(target) {
     if (!(target instanceof Element)) return false;
-    return Boolean(target.closest('button, a, input, textarea, select, .letter-envelope, .reveal-card, .polaroid'));
+    return Boolean(target.closest('button, a, input, textarea, select, .letter-envelope, .reveal-card'));
   }
 
   book?.addEventListener('click', (e) => {
@@ -110,63 +111,27 @@
     if (dx > 0) flipTo(currentPage - 1);
   }, { passive: true });
 
-  // ===== MEMORY RENDERING (2 per page x 4 pages = 8 images) =====
-  function getCaption(index) {
-    if (!captions.length) return 'Add your memory caption here ✍️';
-    return captions[index % captions.length];
-  }
-
-  function createPolaroid(src, index) {
-    const wrap = document.createElement('figure');
-    wrap.className = 'polaroid';
-    wrap.style.setProperty('--tilt', `${(Math.random() * 10 - 5).toFixed(1)}deg`);
-
-    const img = document.createElement('img');
-    img.src = src;
-    img.alt = `Memory ${index + 1}`;
-    img.loading = 'lazy';
-
-    const cap = document.createElement('figcaption');
-    cap.className = 'caption';
-    cap.textContent = getCaption(index);
-
-    const sticker = document.createElement('span');
-    sticker.className = 'sticker';
-    sticker.textContent = ['🎀', '⭐', '💌', '🌸'][index % 4];
-
-    wrap.append(img, cap, sticker);
-    return wrap;
-  }
-
+  // ===== MEMORY RENDERING (one image per side, two-page spread) =====
   function renderMemories() {
-    const grids = [
-      document.getElementById('memoryGrid1'),
-      document.getElementById('memoryGrid2'),
-      document.getElementById('memoryGrid3'),
-      document.getElementById('memoryGrid4'),
+    const slots = [
+      document.getElementById('memLeft1'),
+      document.getElementById('memRight1'),
+      document.getElementById('memLeft2'),
+      document.getElementById('memRight2'),
+      document.getElementById('memLeft3'),
+      document.getElementById('memRight3'),
+      document.getElementById('memLeft4'),
+      document.getElementById('memRight4'),
     ];
 
-    if (memories.length === 0) {
-      for (let i = 0; i < 4; i += 1) {
-        const grid = grids[i];
-        if (grid) {
-          const p1 = createPolaroid(`https://picsum.photos/800?random=${i * 2}`, i * 2);
-          const p2 = createPolaroid(`https://picsum.photos/800?random=${i * 2 + 1}`, i * 2 + 1);
-          grid.append(p1, p2);
-        }
-      }
-    } else {
-      for (let i = 0; i < grids.length; i += 1) {
-        const grid = grids[i];
-        if (grid) {
-          const idx1 = i * 2;
-          const idx2 = i * 2 + 1;
-          const src1 = memories[idx1 % memories.length];
-          const src2 = memories[idx2 % memories.length];
-          grid.append(createPolaroid(src1, idx1), createPolaroid(src2, idx2));
-        }
-      }
-    }
+    slots.forEach((img, idx) => {
+      if (!img) return;
+      const src = memories.length
+        ? memories[idx % memories.length]
+        : `https://picsum.photos/1100?random=${idx + 1}`;
+      img.src = src;
+      img.loading = 'lazy';
+    });
   }
 
   // ===== STORY: TYPEWRITER + SHIMMER =====
@@ -228,40 +193,43 @@
 
   function createFinalScene() {
     if (!finalSymbols) return;
+    finalSymbols.innerHTML = '';
 
     const symIndices = [1, 2, 3];
     const positions = [
-      { x: '15%', y: '25%', size: 80 },
-      { x: '75%', y: '35%', size: 100 },
-      { x: '50%', y: '70%', size: 90 },
+      { x: '14%', y: '24%', size: 120 },
+      { x: '78%', y: '30%', size: 140 },
+      { x: '52%', y: '74%', size: 130 },
     ];
 
     symIndices.forEach((idx, i) => {
       const sym = data.symbols?.[idx];
-      if (sym) {
-        const wrap = document.createElement('div');
-        wrap.className = 'floating-symbol';
-        wrap.style.left = positions[i].x;
-        wrap.style.top = positions[i].y;
-        wrap.style.width = `${positions[i].size}px`;
-        wrap.style.height = `${positions[i].size}px`;
+      if (!sym) return;
 
-        const img = document.createElement('img');
-        img.src = sym;
-        img.alt = `Symbol ${idx + 1}`;
-        wrap.appendChild(img);
-        finalSymbols.appendChild(wrap);
+      const wrap = document.createElement('div');
+      wrap.className = 'floating-symbol';
+      wrap.style.left = positions[i].x;
+      wrap.style.top = positions[i].y;
+      wrap.style.width = `${positions[i].size}px`;
+      wrap.style.height = `${positions[i].size}px`;
 
-        if (window.gsap) {
-          gsap.to(wrap, {
-            y: '-20px',
-            duration: 3,
-            repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut',
-            delay: i * 0.3,
-          });
-        }
+      const img = document.createElement('img');
+      img.src = sym;
+      img.alt = `Symbol ${idx + 1}`;
+      wrap.appendChild(img);
+      finalSymbols.appendChild(wrap);
+
+      if (window.gsap) {
+        gsap.to(wrap, {
+          x: `${i % 2 === 0 ? 24 : -20}px`,
+          y: `${-26 + i * 4}px`,
+          rotation: i % 2 === 0 ? 7 : -6,
+          duration: 4.4 + i * 0.5,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+          delay: i * 0.25,
+        });
       }
     });
   }
@@ -388,25 +356,36 @@
     if (!envelope || !letterContent) return;
     letterContent.textContent = data.letter || 'Write your letter here.';
 
-    const toggle = () => {
-      envelope.classList.toggle('open');
-      if (envelope.classList.contains('open')) {
-        playFlip();
-      }
+    let openedOnce = false;
+
+    const openEnvelope = () => {
+      if (openedOnce) return;
+      openedOnce = true;
+      envelope.classList.add('open');
+      playFlip();
+
+      setTimeout(() => {
+        transitionToHiddenReveal();
+      }, 2400);
     };
 
-    envelope.addEventListener('click', toggle);
-    envelope.addEventListener('keydown', (e) => {
+    letterScene?.addEventListener('click', openEnvelope);
+    envelope.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openEnvelope();
+    });
+
+    letterScene?.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        toggle();
+        openEnvelope();
       }
     });
   }
 
   function setupHoldReveal() {
     if (!revealCard || !revealImage) return;
-    revealImage.src = memories[0] || 'https://picsum.photos/700';
+    revealImage.src = data.hidden_reveal || memories[0] || 'https://picsum.photos/900';
 
     const start = () => revealCard.classList.add('holding');
     const end = () => revealCard.classList.remove('holding');
@@ -450,14 +429,34 @@
     }
   }
 
-  function transitionToFinal() {
+  function transitionToHiddenReveal() {
     if (window.gsap && letterScene) {
       gsap.to(letterScene, {
         opacity: 0,
         duration: 0.8,
         onComplete: () => {
-          showScene(finalScene);
+          showScene(hiddenRevealScene);
           gsap.set(letterScene, { opacity: 1 });
+
+          setTimeout(() => {
+            transitionToFinalFromHidden();
+          }, 4200);
+        },
+      });
+    } else {
+      showScene(hiddenRevealScene);
+      setTimeout(() => transitionToFinalFromHidden(), 4200);
+    }
+  }
+
+  function transitionToFinalFromHidden() {
+    if (window.gsap && hiddenRevealScene) {
+      gsap.to(hiddenRevealScene, {
+        opacity: 0,
+        duration: 0.8,
+        onComplete: () => {
+          showScene(finalScene);
+          gsap.set(hiddenRevealScene, { opacity: 1 });
           createFinalScene();
         },
       });
