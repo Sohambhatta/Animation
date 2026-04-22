@@ -732,6 +732,7 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
   background: radial-gradient(circle at 50% 35%, #321224 0%, #210915 55%, #16040c 100%);
   display: grid;
   place-items: center;
+  cursor: none;
 }
 
 .final-background {
@@ -753,20 +754,6 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
   inset: 0;
   z-index: 20;
   pointer-events: none;
-}
-
-.cursor-trail-dot {
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 207, 238, 0.95) 0%, rgba(255, 129, 199, 0.65) 45%, rgba(255, 129, 199, 0) 80%);
-  box-shadow:
-    0 0 22px rgba(255, 132, 204, 0.8),
-    0 0 44px rgba(255, 94, 177, 0.45);
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: opacity 140ms ease;
 }
 
 .cursor-glitter {
