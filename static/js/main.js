@@ -7,7 +7,7 @@
   const dataNode = document.getElementById('appData');
   const data = dataNode ? JSON.parse(dataNode.textContent || '{}') : {};
   const memories = (data.memories || []).length ? data.memories : [];
-  const captions = data.captions || [];
+  const captions = data.memory_captions || data.captions || [];
 
   // ===== SCENE MANAGEMENT =====
   const bookScene = document.getElementById('bookScene');
@@ -370,15 +370,17 @@
     finalSymbols.innerHTML = '';
     movingFinalSymbols.length = 0;
 
-    const available = [data.symbols?.[1], data.symbols?.[2], data.symbols?.[3]].filter(Boolean);
+    const availableBase = [data.symbols?.[1], data.symbols?.[2], data.symbols?.[3]].filter(Boolean);
+    const available = availableBase.flatMap((sym) => [sym, sym, sym]);
+
     available.forEach((sym, i) => {
       const size = 96 + Math.random() * 50;
       const sprite = createSprite(finalSymbols, {
         symbolSrc: sym,
         className: 'floating-symbol',
         size,
-        x: 90 + i * 160,
-        y: 90 + i * 110,
+        x: Math.random() * Math.max(window.innerWidth - 180, 180) + 90,
+        y: Math.random() * Math.max(window.innerHeight - 180, 180) + 90,
         vx: (Math.random() * 2 - 1) * 1.2,
         vy: (Math.random() * 2 - 1) * 1.2,
       });

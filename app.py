@@ -127,6 +127,16 @@ def index():
             "Us, being us — soft chaos and comfort.",
             "Every photo, another reason to smile.",
         ],
+        "memory_captions": [
+            "This memory always makes me pause for a second and smile, because I can still remember every tiny detail from this day — the weather, the jokes, the way we looked at each other, and how calm everything felt being next to you.",
+            "If I could relive one small stretch of time exactly as it happened, it might be this one: the simple conversation, the laughter in between, and that quiet feeling that being with you turns ordinary moments into something unforgettable and warm.",
+            "I love this picture because it captures the version of us that feels effortless — playful, comfortable, and real. Even when life was busy, moments like this reminded me how lucky I am to share my days, thoughts, and little joys with you.",
+            "Whenever I look at this, I remember how easy it was to be happy right there with you. No big plan, no perfect setting, just us being ourselves, making a normal day feel special in the sweetest and most natural way possible.",
+            "This was one of those moments that seemed small at the time but became huge in my heart later. The way we were talking, the way we were laughing, and the comfort of your presence made everything around us feel lighter and brighter.",
+            "I keep this memory close because it reminds me that love is built in these exact moments — the unplanned ones, the soft ones, the ones where we are simply together and fully present. That is what makes this so meaningful to me.",
+            "There is something gentle about this memory that I never want to lose. It holds your smile, our energy, and that familiar feeling of peace I get when I am with you. Looking back at it still feels like coming home.",
+            "This photo is like a little time capsule of everything I cherish about us: your warmth, our connection, and the way we can make each other laugh without trying too hard. It is one more reminder of how much this year has meant to me.",
+        ],
         "story": [
             "Feels young, warm, and real.",
             "A year with you somehow feels both really fast and really full at the same time.",
