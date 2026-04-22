@@ -748,6 +748,49 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
   pointer-events: none;
 }
 
+.final-cursor-trail {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.cursor-trail-dot {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 207, 238, 0.95) 0%, rgba(255, 129, 199, 0.65) 45%, rgba(255, 129, 199, 0) 80%);
+  box-shadow:
+    0 0 22px rgba(255, 132, 204, 0.8),
+    0 0 44px rgba(255, 94, 177, 0.45);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+.cursor-glitter {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 245, 252, 1) 0%, rgba(255, 185, 229, 0.92) 55%, rgba(255, 185, 229, 0) 100%);
+  box-shadow: 0 0 14px rgba(255, 174, 227, 0.9);
+  pointer-events: none;
+  animation: glitterTrailFade 0.85s ease-out forwards;
+}
+
+@keyframes glitterTrailFade {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx, 0px), var(--dy, -22px)) scale(0.2);
+  }
+}
+
 .floating-symbol {
   position: absolute;
   opacity: 0.95;

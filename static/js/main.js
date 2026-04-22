@@ -195,9 +195,11 @@
   const symbolIntroRight = document.getElementById('symbolIntroRight');
   const bookMarginSymbols = document.getElementById('bookMarginSymbols');
   const finalSymbols = document.getElementById('finalSymbols');
+  const finalCursorTrail = document.getElementById('finalCursorTrail');
   const movingMarginSymbols = [];
   const movingFinalSymbols = [];
-  const finalCursor = { x: 0, y: 0, active: false };
+  const finalCursor = { x: 0, y: 0, renderX: 0, renderY: 0, active: false, initialized: false, lastSpawn: 0 };
+  let finalCursorDot = null;
   let symbolPhysicsStarted = false;
 
   function loadSymbols() {
@@ -338,6 +340,14 @@
         const sceneIsVisible = !finalScene?.classList.contains('hidden');
         const cursor = sceneIsVisible ? finalCursor : null;
         updateSpriteGroup(movingFinalSymbols, Math.max(rect.width, 1), Math.max(rect.height, 1), cursor);
+
+        if (finalCursorDot && sceneIsVisible) {
+          finalCursor.renderX += (finalCursor.x - finalCursor.renderX) * 0.24;
+          finalCursor.renderY += (finalCursor.y - finalCursor.renderY) * 0.24;
+          finalCursorDot.style.left = `${finalCursor.renderX}px`;
+          finalCursorDot.style.top = `${finalCursor.renderY}px`;
+          finalCursorDot.style.opacity = finalCursor.active ? '1' : '0';
+        }
       }
       requestAnimationFrame(tick);
     };
@@ -420,13 +430,41 @@
   }
 
   function setupFinalCursorInteraction() {
-    if (!finalScene || !finalSymbols) return;
+    if (!finalScene || !finalSymbols || !finalCursorTrail) return;
+
+    finalCursorDot = document.createElement('div');
+    finalCursorDot.className = 'cursor-trail-dot';
+    finalCursorTrail.appendChild(finalCursorDot);
+
+    const updateCursorPoint = (x, y) => {
+      finalCursor.x = x;
+      finalCursor.y = y;
+      finalCursor.active = true;
+
+      if (!finalCursor.initialized) {
+        finalCursor.renderX = x;
+        finalCursor.renderY = y;
+        finalCursor.initialized = true;
+      }
+
+      const now = performance.now();
+      if (now - finalCursor.lastSpawn < 16) return;
+      finalCursor.lastSpawn = now;
+
+      const glitter = document.createElement('span');
+      glitter.className = 'cursor-glitter';
+      glitter.style.left = `${x}px`;
+      glitter.style.top = `${y}px`;
+      glitter.style.setProperty('--dx', `${(Math.random() - 0.5) * 34}px`);
+      glitter.style.setProperty('--dy', `${-10 - Math.random() * 34}px`);
+      finalCursorTrail.appendChild(glitter);
+
+      setTimeout(() => glitter.remove(), 900);
+    };
 
     finalScene.addEventListener('mousemove', (e) => {
       const rect = finalSymbols.getBoundingClientRect();
-      finalCursor.x = e.clientX - rect.left;
-      finalCursor.y = e.clientY - rect.top;
-      finalCursor.active = true;
+      updateCursorPoint(e.clientX - rect.left, e.clientY - rect.top);
     });
 
     finalScene.addEventListener('mouseleave', () => {
@@ -437,9 +475,7 @@
       const touch = e.touches[0];
       if (!touch) return;
       const rect = finalSymbols.getBoundingClientRect();
-      finalCursor.x = touch.clientX - rect.left;
-      finalCursor.y = touch.clientY - rect.top;
-      finalCursor.active = true;
+      updateCursorPoint(touch.clientX - rect.left, touch.clientY - rect.top);
     }, { passive: true });
 
     finalScene.addEventListener('touchend', () => {
