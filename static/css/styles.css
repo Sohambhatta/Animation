@@ -299,8 +299,9 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
   border: 2px solid rgba(255, 255, 255, 0.98);
   padding: 12px 12px 14px;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto auto;
   min-height: 0;
+  align-content: start;
   box-shadow: 0 12px 26px rgba(73, 49, 63, 0.18);
   transform: rotate(var(--card-tilt, 0deg));
   transition: transform 0.28s ease, box-shadow 0.28s ease;
@@ -329,8 +330,9 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
   border: 10px solid #fff;
   background: #fff;
   position: relative;
-  width: 100%;
+  width: min(100%, 330px);
   aspect-ratio: 1 / 1;
+  justify-self: center;
   transition: transform 0.28s ease;
 }
 
@@ -357,6 +359,7 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
 .memory-caption {
   margin: 10px 0 0;
   min-height: 48px;
+  max-height: 140px;
   padding: 9px 10px;
   border-radius: 10px;
   border: 1px dashed rgba(126, 90, 142, 0.35);
@@ -366,6 +369,9 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
   color: #4a3a58;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  overflow-y: auto;
+  display: block;
+  opacity: 1;
   transition: background 0.25s ease, border-color 0.25s ease;
 }
 

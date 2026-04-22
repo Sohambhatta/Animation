@@ -197,6 +197,7 @@
   const finalSymbols = document.getElementById('finalSymbols');
   const movingMarginSymbols = [];
   const movingFinalSymbols = [];
+  const finalCursor = { x: 0, y: 0, active: false };
   let symbolPhysicsStarted = false;
 
   function loadSymbols() {
@@ -283,11 +284,24 @@
     b.vy -= impulse * ny;
   }
 
-  function updateSpriteGroup(group, boundsWidth, boundsHeight) {
+  function updateSpriteGroup(group, boundsWidth, boundsHeight, cursor = null) {
     for (let i = 0; i < group.length; i += 1) {
       const s = group[i];
       s.vx += (Math.random() - 0.5) * 0.02;
       s.vy += (Math.random() - 0.5) * 0.02;
+
+      if (cursor?.active) {
+        const dx = s.x - cursor.x;
+        const dy = s.y - cursor.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        const influenceRadius = 220;
+        if (dist < influenceRadius) {
+          const power = (influenceRadius - dist) / influenceRadius;
+          s.vx += (dx / dist) * power * 0.22;
+          s.vy += (dy / dist) * power * 0.22;
+        }
+      }
+
       s.vx = Math.max(-1.5, Math.min(1.5, s.vx));
       s.vy = Math.max(-1.5, Math.min(1.5, s.vy));
 
@@ -321,7 +335,9 @@
       }
       if (finalSymbols) {
         const rect = finalSymbols.getBoundingClientRect();
-        updateSpriteGroup(movingFinalSymbols, Math.max(rect.width, 1), Math.max(rect.height, 1));
+        const sceneIsVisible = !finalScene?.classList.contains('hidden');
+        const cursor = sceneIsVisible ? finalCursor : null;
+        updateSpriteGroup(movingFinalSymbols, Math.max(rect.width, 1), Math.max(rect.height, 1), cursor);
       }
       requestAnimationFrame(tick);
     };
@@ -401,6 +417,34 @@
       });
       movingFinalSymbols.push(sprite);
     }
+  }
+
+  function setupFinalCursorInteraction() {
+    if (!finalScene || !finalSymbols) return;
+
+    finalScene.addEventListener('mousemove', (e) => {
+      const rect = finalSymbols.getBoundingClientRect();
+      finalCursor.x = e.clientX - rect.left;
+      finalCursor.y = e.clientY - rect.top;
+      finalCursor.active = true;
+    });
+
+    finalScene.addEventListener('mouseleave', () => {
+      finalCursor.active = false;
+    });
+
+    finalScene.addEventListener('touchmove', (e) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      const rect = finalSymbols.getBoundingClientRect();
+      finalCursor.x = touch.clientX - rect.left;
+      finalCursor.y = touch.clientY - rect.top;
+      finalCursor.active = true;
+    }, { passive: true });
+
+    finalScene.addEventListener('touchend', () => {
+      finalCursor.active = false;
+    });
   }
 
   // ===== HEART PARTICLES =====
@@ -846,6 +890,7 @@
   startSymbolPhysicsLoop();
   setupEnvelope();
   setupHoldReveal();
+  setupFinalCursorInteraction();
   setupAudio();
   setupParallax();
   floatingSonu();
