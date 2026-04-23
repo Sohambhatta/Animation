@@ -148,11 +148,20 @@ def index():
         "letter": (
             "Dear Sonu,\n\n"
             "This year with you has been my favorite chapter so far in life. "
-            "Thank you for every laugh, every little check-in,"
-            "and every memory that we will cherish forever, together."
-            "You make ordinary days feel magical.\n\n"
+            "Thank you for every laugh, every little check-in, "
+            "and every memory we keep collecting together. "
+            "Even the moments which you think I didn't enjoy like ice skating on our anniversary, "
+            "even if it was only for about forty minutes, I love every moment spent with you, and the pain from the very uncomfortable shoes honestly disappeared when I held your hand. Eating free thanks to your "
+            "very mysterious mafia-level connections was also a highlight ofcourse. "
+            "I also love the little wooden box you made for me so much. "
+            "The tiny rotating axle inside, with all those little photos taped around it, is one of the most "
+            "thoughtful things anyone has ever made for me. Scrap that, it's in the most thoughtful things anyone has ever made for me, lol."
+            "Every time I scroll through it, it gives me a full rush of dopamine and this warm, steady feeling "
+            "of love. And I do this every night before I change my clothes. "
+            "You are truly special, and I feel so lucky to love you. "
+            "You turned my worst days into the best ones.\n\n"
             "Happy 1 Year Anniversary.\n"
-            "Love, always."
+            "Live, Laugh, Love poo, as always."
         ),
         "symbols": symbol_urls,
         "hidden_reveal": hidden_reveal_image,
