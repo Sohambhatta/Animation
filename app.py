@@ -6,7 +6,7 @@ from typing import List
 
 from flask import Flask, render_template, url_for
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder=".")
 
 SUPPORTED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
